@@ -129,7 +129,7 @@ class HomeScreen extends Component {
                     key={index}
                     onPress={() => {
                       // this.props.navigation.navigate("Section");
-                      this.props.navigation.push("Section");
+                      this.props.navigation.push("Section", { section: card });
                     }}
                   >
                     <Card {...card} />
