@@ -4,11 +4,11 @@ import styled from "styled-components";
 const Card = props => (
   <Container>
     <Cover>
-      <Image source={props.image} />
+      <Image source={{ uri: props.image.url }} />
       <Title>{props.title}</Title>
     </Cover>
     <Content>
-      <Logo source={props.logo} />
+      <Logo source={{ uri: props.logo.url }} />
       <Wrapper>
         <Caption>{props.caption}</Caption>
         <Subtitle>{props.subtitle}</Subtitle>

@@ -14,9 +14,9 @@ export default class SectionScreen extends React.Component {
     return (
       <Container>
         <Cover>
-          <Image source={section.image} />
+          <Image source={{ uri: section.image.url }} />
           <Wrapper>
-            <Logo source={section.logo} />
+            <Logo source={{ uri: section.logo.url }} />
             <CourseTitle>{section.subtitle}</CourseTitle>
             <TouchableOpacity
               onPress={() => navigation.goBack()}
