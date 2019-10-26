@@ -37,6 +37,9 @@ class HomeScreen extends Component {
     opacity: new Animated.Value(1)
   };
 
+  static navigationOptions = {
+    header: null
+  };
   componentDidUpdate(prevProps) {
     if (this.props != prevProps) {
       this.toggleMenu();
@@ -122,7 +125,15 @@ class HomeScreen extends Component {
                 showsHorizontalScrollIndicator={false}
               >
                 {cards.map((card, index) => (
-                  <Card key={index} {...card} />
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => {
+                      // this.props.navigation.navigate("Section");
+                      this.props.navigation.push("Section");
+                    }}
+                  >
+                    <Card {...card} />
+                  </TouchableOpacity>
                 ))}
               </ScrollView>
               <Subtitle>Related Courses</Subtitle>
@@ -150,7 +161,6 @@ const Container = styled.View`
   background: #f0f3f5;
   padding-top: 25px;
   flex: 1;
-  border-radius: 10px;
 `;
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const TitleBar = styled.View`
