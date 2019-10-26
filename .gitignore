@@ -1,0 +1,17 @@
+node_modules/**/*
+.expo/*
+.expo-shared/*
+.watchmanconfig
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+web-report/
+*.log
+validStyle*.txt
+Demo*
+haste*
