@@ -36,6 +36,7 @@ const CardsQuery = gql`
           height
         }
         caption
+        content
         logo {
           title
           description
