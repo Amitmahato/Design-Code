@@ -5,7 +5,8 @@ import {
   StatusBar,
   TouchableOpacity,
   Animated,
-  Easing
+  Easing,
+  Platform
 } from "react-native";
 import { connect } from "react-redux";
 import styled from "styled-components";
@@ -76,6 +77,10 @@ class HomeScreen extends Component {
   static navigationOptions = {
     header: null
   };
+
+  componentDidMount() {
+    if (Platform.OS == "android") StatusBar.setBarStyle("dark-content", true);
+  }
   componentDidUpdate(prevProps) {
     if (this.props != prevProps) {
       this.toggleMenu();
@@ -146,7 +151,7 @@ class HomeScreen extends Component {
                 <NotificationIcon style={{ position: "absolute", right: 20 }} />
               </TitleBar>
               <ScrollView
-                style={{ marginTop: 20 }}
+                style={{ marginTop: 20, paddingLeft: 10 }}
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
               >
@@ -154,7 +159,7 @@ class HomeScreen extends Component {
                   <Logo key={index} image={logo.image} text={logo.text} />
                 ))}
               </ScrollView>
-              <Subtitle>Continue Learning</Subtitle>
+              <Subtitle>{"Continue Learning".toUpperCase()}</Subtitle>
               <Query query={CardsQuery}>
                 {({ loading, error, data }) => {
                   if (loading) {
@@ -166,7 +171,7 @@ class HomeScreen extends Component {
                   return (
                     <ScrollView
                       horizontal="true"
-                      style={{ paddingBottom: 30 }}
+                      style={{ paddingBottom: 20, paddingLeft: 10 }}
                       showsHorizontalScrollIndicator={false}
                     >
                       {data.cardsCollection.items.map((card, index) => (
@@ -186,10 +191,12 @@ class HomeScreen extends Component {
                   );
                 }}
               </Query>
-              <Subtitle>Related Courses</Subtitle>
-              {courses.map((course, index) => (
-                <Course key={index} {...course} />
-              ))}
+              <Subtitle>{"Related Courses".toUpperCase()}</Subtitle>
+              <CourseContainer>
+                {courses.map((course, index) => (
+                  <Course key={index} {...course} />
+                ))}
+              </CourseContainer>
             </ScrollView>
           </SafeAreaView>
         </AnimatedContainer>
@@ -244,9 +251,13 @@ const Subtitle = styled.Text`
   color: #b8bece;
   font-weight: 600;
   font-size: 15px;
-  margin-left: 20px;
-  margin-bottom: 20px;
+  margin: 20px 25px;
   text-transform: uppercase;
+`;
+
+const CourseContainer = styled.View`
+  flex-direction: row;
+  flex-wrap: wrap;
 `;
 
 //static data

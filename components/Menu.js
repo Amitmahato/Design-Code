@@ -4,7 +4,8 @@ import {
   Animated,
   StatusBar,
   TouchableOpacity,
-  Dimensions
+  Dimensions,
+  ScrollView
 } from "react-native";
 import { connect } from "react-redux";
 import { Ionicons } from "@expo/vector-icons";
@@ -25,14 +26,22 @@ const mapDispatchToProps = dispatch => {
 };
 
 const screenHeight = Dimensions.get("window").height;
+const screenWidth = Dimensions.get("window").width;
+var menuWidth = screenWidth;
 
+if (screenWidth > 500) {
+  menuWidth = 500;
+}
 class Menu extends React.Component {
   state = {
+    width: menuWidth,
+    height: screenHeight,
     top: new Animated.Value(screenHeight),
     statusbar: false
   };
 
   componentDidMount() {
+    Dimensions.addEventListener("change", this.adaptLayout);
     this.toggleMenu();
   }
 
@@ -42,6 +51,26 @@ class Menu extends React.Component {
     }
   }
 
+  adaptLayout = dimensions => {
+    const screenHeight = dimensions.window.height;
+    const screenWidth = dimensions.window.width;
+    var menuWidth = screenWidth;
+    if (screenWidth > 500) {
+      menuWidth = 500;
+    }
+    console.log(
+      "screen width : ",
+      screenWidth,
+      "screen height : ",
+      screenHeight
+    );
+    this.setState({
+      top: new Animated.Value(screenHeight),
+      height: screenHeight,
+      width: menuWidth
+    });
+    this.toggleMenu();
+  };
   toggleMenu = () => {
     if (this.props.action == "openMenu") {
       Animated.spring(this.state.top, {
@@ -52,7 +81,7 @@ class Menu extends React.Component {
 
     if (this.props.action == "closeMenu") {
       Animated.spring(this.state.top, {
-        toValue: screenHeight
+        toValue: this.state.height
       }).start();
       this.setState({ statusbar: false });
     }
@@ -60,7 +89,13 @@ class Menu extends React.Component {
 
   render() {
     return (
-      <AnimatedContainer style={{ top: this.state.top }}>
+      <AnimatedContainer
+        style={{
+          top: this.state.top,
+          width: this.state.width,
+          height: this.state.height
+        }}
+      >
         <StatusBar hidden={this.state.statusbar} />
         <Cover>
           <Image source={require("../assets/background1.jpg")} />
@@ -98,9 +133,8 @@ export default connect(
 const Container = styled.View`
   position: absolute;
   background: white;
-  width: 100%;
-  height: 100%;
   z-index: 100;
+  align-self: center;
   border-radius: 10px;
   overflow: hidden;
 `;
