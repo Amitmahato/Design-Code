@@ -1,17 +1,76 @@
 import React from "react";
 import styled from "styled-components";
+import {
+  Animated,
+  Dimensions,
+  StatusBar,
+  TouchableOpacity,
+  TouchableWithoutFeedback
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+
+const screenHeight = Dimensions.get("window").height;
+const screenWidth = Dimensions.get("window").width;
 
 export default class Project extends React.Component {
+  state = {
+    cardWidth: new Animated.Value(315),
+    cardHeight: new Animated.Value(460),
+    paddingTop: new Animated.Value(0),
+    opacity: 0
+  };
+
+  openCard = () => {
+    Animated.spring(this.state.cardWidth, { toValue: screenWidth }).start();
+    Animated.spring(this.state.cardHeight, { toValue: screenHeight }).start();
+    Animated.spring(this.state.paddingTop, { toValue: 44 }).start();
+    // StatusBar.setHidden(true);
+    this.setState({ opacity: 1 });
+  };
+  closeCard = () => {
+    Animated.spring(this.state.cardWidth, { toValue: 315 }).start();
+    Animated.spring(this.state.cardHeight, { toValue: 460 }).start();
+    Animated.spring(this.state.paddingTop, { toValue: 0 }).start();
+    // StatusBar.setHidden(false);
+    this.setState({ opacity: 0 });
+  };
   render() {
     return (
-      <Container style={{ elevation: 20 }}>
-        <Cover>
-          <Image source={this.props.image} />
-          <Title>{this.props.title}</Title>
-          <Author>by {this.props.author}</Author>
-        </Cover>
-        <Text>{this.props.text}</Text>
-      </Container>
+      <TouchableWithoutFeedback onPress={this.openCard}>
+        <AnimatedContainer
+          style={{
+            elevation: 20,
+            width: this.state.cardWidth,
+            height: this.state.cardHeight,
+            paddingTop: this.state.paddingTop
+          }}
+        >
+          <Cover>
+            <Image source={this.props.image} />
+            <Title>{this.props.title}</Title>
+            <TouchableOpacity
+              onPress={this.closeCard}
+              style={{
+                position: "absolute",
+                top: 20,
+                right: 20
+              }}
+            >
+              <CloseView style={{ opacity: this.state.opacity }}>
+                <Ionicons
+                  name="ios-close"
+                  size={36}
+                  style={{
+                    color: "#56f"
+                  }}
+                />
+              </CloseView>
+            </TouchableOpacity>
+            <Author>by {this.props.author}</Author>
+          </Cover>
+          <Text>{this.props.text}</Text>
+        </AnimatedContainer>
+      </TouchableWithoutFeedback>
     );
   }
 }
@@ -24,10 +83,11 @@ const Container = styled.View`
   overflow: hidden;
 `;
 
+//Create animated component for applying animated values on it
+const AnimatedContainer = Animated.createAnimatedComponent(Container);
+
 const Cover = styled.View`
   height: 290px;
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
   overflow: hidden;
 `;
 
@@ -44,6 +104,15 @@ const Title = styled.Text`
   font-weight: bold;
   color: white;
   width: 300px;
+`;
+
+const CloseView = styled.View`
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
+  background: white;
+  justify-content: center;
+  align-items: center;
 `;
 
 const Author = styled.Text`
