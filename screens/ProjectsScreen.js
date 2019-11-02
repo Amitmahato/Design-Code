@@ -15,7 +15,8 @@ export default class ProjectsScreen extends React.Component {
     thirdScale: new Animated.Value(0.8),
     thirdTranslateY: new Animated.Value(-50),
     index: 0,
-    isCardOpen: false
+    isCardOpen: false,
+    opacity: new Animated.Value(0)
   };
 
   getNextProject(index) {
@@ -42,6 +43,7 @@ export default class ProjectsScreen extends React.Component {
         Animated.spring(this.state.translateY, { toValue: 0 }).start();
         Animated.spring(this.state.thirdScale, { toValue: 0.9 }).start();
         Animated.spring(this.state.thirdTranslateY, { toValue: 50 }).start();
+        Animated.spring(this.state.opacity, { toValue: 0.5 }).start();
       },
 
       onPanResponderMove: Animated.event([
@@ -79,6 +81,7 @@ export default class ProjectsScreen extends React.Component {
           Animated.spring(this.state.thirdScale, { toValue: 0.8 }).start();
           Animated.spring(this.state.thirdTranslateY, { toValue: -50 }).start();
         }
+        Animated.spring(this.state.opacity, { toValue: 0 }).start();
       }
     });
   }
@@ -87,6 +90,7 @@ export default class ProjectsScreen extends React.Component {
     return (
       <Container>
         <StatusBar barStyle="dark-content" />
+        <AnimatedMask style={{ opacity: this.state.opacity }} />
         <Animated.View
           style={{
             transform: [
@@ -150,7 +154,16 @@ const Container = styled.View`
   background: #f0f3f5;
 `;
 
-const Text = styled.Text``;
+const Mask = styled.View`
+  width: 100%;
+  height: 100%;
+  background: black;
+  position: absolute;
+  top: 0;
+  left: 0;
+`;
+
+const AnimatedMask = Animated.createAnimatedComponent(Mask);
 
 const projects = [
   {
