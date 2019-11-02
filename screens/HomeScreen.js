@@ -19,6 +19,7 @@ import Avatar from "../components/Avatar";
 import ApolloClient from "apollo-boost";
 import gql from "graphql-tag";
 import { Query } from "react-apollo";
+import ModalLogin from "../components/ModalLogin";
 
 const CardsQuery = gql`
   {
@@ -200,6 +201,7 @@ class HomeScreen extends Component {
             </ScrollView>
           </SafeAreaView>
         </AnimatedContainer>
+        <ModalLogin />
       </RootView>
     );
   }
