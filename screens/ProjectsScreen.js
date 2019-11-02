@@ -14,7 +14,8 @@ export default class ProjectsScreen extends React.Component {
     translateY: new Animated.Value(44),
     thirdScale: new Animated.Value(0.8),
     thirdTranslateY: new Animated.Value(-50),
-    index: 0
+    index: 0,
+    isCardOpen: false
   };
 
   getNextProject(index) {
@@ -24,9 +25,17 @@ export default class ProjectsScreen extends React.Component {
     return i;
   }
 
+  changeCardOpen = value => {
+    this.setState({ isCardOpen: value });
+  };
+
   componentWillMount() {
     this._panResponder = PanResponder.create({
-      onMoveShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: (event, gestureState) => {
+        if (this.state.isCardOpen) return false;
+        if (gestureState.dx === 0 && gestureState.dy === 0) return false;
+        else return true;
+      },
 
       onPanResponderGrant: () => {
         Animated.spring(this.state.scale, { toValue: 1 }).start();
@@ -43,11 +52,13 @@ export default class ProjectsScreen extends React.Component {
       onPanResponderRelease: () => {
         const positionX = this.state.pan.x.__getValue();
         const positionY = this.state.pan.y.__getValue();
-        console.log(positionX, positionY);
 
         if (positionX < -135 || positionX > 135 || positionY >= 150) {
           Animated.timing(this.state.pan, {
-            toValue: { x: positionX > 0 ? 1000 : -1000, y: 1000 } //if user swipes right throw the card to right else throw to left
+            toValue: {
+              x: positionX > 0 ? 1000 : -1000,
+              y: positionY < 150 ? 500 : 1000
+            } //throw the card in the direction of user's swipe
           }).start(() => {
             this.state.pan.setValue({ x: 0, y: 0 });
             this.state.scale.setValue(0.9);
@@ -85,7 +96,11 @@ export default class ProjectsScreen extends React.Component {
           }}
           {...this._panResponder.panHandlers}
         >
-          <Project {...projects[this.state.index]} />
+          <Project
+            {...projects[this.state.index]}
+            canOpen={true}
+            changeCardOpen={this.changeCardOpen}
+          />
         </Animated.View>
         <Animated.View
           style={{

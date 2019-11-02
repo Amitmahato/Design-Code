@@ -21,10 +21,12 @@ export default class Project extends React.Component {
   };
 
   openCard = () => {
+    if (!this.props.canOpen) return;
     Animated.spring(this.state.cardWidth, { toValue: screenWidth }).start();
     Animated.spring(this.state.cardHeight, { toValue: screenHeight }).start();
     Animated.spring(this.state.paddingTop, { toValue: 44 }).start();
     // StatusBar.setHidden(true);
+    this.props.changeCardOpen(true);
     this.setState({ opacity: 1 });
   };
   closeCard = () => {
@@ -32,6 +34,7 @@ export default class Project extends React.Component {
     Animated.spring(this.state.cardHeight, { toValue: 460 }).start();
     Animated.spring(this.state.paddingTop, { toValue: 0 }).start();
     // StatusBar.setHidden(false);
+    this.props.changeCardOpen(false);
     this.setState({ opacity: 0 });
   };
   render() {
@@ -103,7 +106,7 @@ const Title = styled.Text`
   font-size: 24px;
   font-weight: bold;
   color: white;
-  width: 300px;
+  width: 270px;
 `;
 
 const CloseView = styled.View`
