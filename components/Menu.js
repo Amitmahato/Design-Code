@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import {
   Animated,
+  AsyncStorage,
   StatusBar,
   TouchableOpacity,
   Dimensions,
@@ -17,9 +18,13 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    closeMenu: name =>
+    closeMenu: () =>
       dispatch({
-        type: "CLOSE_MENU",
+        type: "CLOSE_MENU"
+      }),
+    updateName: name =>
+      dispatch({
+        type: "UPDATE_NAME",
         name: name
       })
   };
@@ -58,12 +63,7 @@ class Menu extends React.Component {
     if (screenWidth > 500) {
       menuWidth = 500;
     }
-    console.log(
-      "screen width : ",
-      screenWidth,
-      "screen height : ",
-      screenHeight
-    );
+
     this.setState({
       top: new Animated.Value(screenHeight),
       height: screenHeight,
@@ -87,6 +87,13 @@ class Menu extends React.Component {
     }
   };
 
+  handleMenu = index => {
+    if (index == 3) {
+      this.props.closeMenu();
+      this.props.updateName();
+      AsyncStorage.clear();
+    }
+  };
   render() {
     return (
       <AnimatedContainer
@@ -103,7 +110,7 @@ class Menu extends React.Component {
           <Subtitle>Student at Pulchowk Engineering Campus</Subtitle>
         </Cover>
         <TouchableOpacity
-          onPress={() => this.props.closeMenu(this.props.name)}
+          onPress={() => this.props.closeMenu()}
           style={{
             position: "absolute",
             top: 120,
@@ -117,7 +124,14 @@ class Menu extends React.Component {
         </TouchableOpacity>
         <Content>
           {items.map((item, index) => (
-            <MenuItem key={index} {...item} />
+            <TouchableOpacity
+              key={index}
+              onPress={() => {
+                this.handleMenu(index);
+              }}
+            >
+              <MenuItem key={index} {...item} />
+            </TouchableOpacity>
           ))}
         </Content>
       </AnimatedContainer>

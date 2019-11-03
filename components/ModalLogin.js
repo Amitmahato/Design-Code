@@ -3,6 +3,7 @@ import styled from "styled-components";
 import {
   Alert,
   Animated,
+  AsyncStorage,
   Dimensions,
   Keyboard,
   TouchableOpacity,
@@ -27,6 +28,12 @@ mapDispatchToProps = dispatch => {
       dispatch({
         type: "CLOSE_LOGIN"
       });
+    },
+    updateName: name => {
+      dispatch({
+        type: "UPDATE_NAME",
+        name
+      });
     }
   };
 };
@@ -43,6 +50,10 @@ class ModalLogin extends React.Component {
     scale: new Animated.Value(1.3),
     translateY: new Animated.Value(0)
   };
+
+  componentDidMount() {
+    this.retrieveName();
+  }
 
   componentDidUpdate() {
     if (this.props.action === "openLogin") {
@@ -78,11 +89,28 @@ class ModalLogin extends React.Component {
       iconPassword: require("../assets/icon-password.png")
     });
   };
+
   focusPassword = () => {
     this.setState({
       iconEmail: require("../assets/icon-email.png"),
       iconPassword: require("../assets/icon-password-animated.gif")
     });
+  };
+
+  storeName = async name => {
+    try {
+      await AsyncStorage.setItem("name", name);
+    } catch (error) {}
+  };
+
+  retrieveName = async () => {
+    try {
+      const name = await AsyncStorage.getItem("name");
+      if (name != null) {
+        this.props.updateName(name);
+        console.log(name);
+      }
+    } catch (error) {}
   };
 
   handleLogin = () => {
@@ -95,15 +123,20 @@ class ModalLogin extends React.Component {
       .signInWithEmailAndPassword(email, password)
       .catch(error => {
         Alert.alert("Error", error.message);
+        this.setState({ isLoading: false });
       })
       .then(response => {
-        console.log(response);
+        // console.log(response);
 
         if (response) {
           this.setState({ isLoading: false, isSuccessfull: true });
-          // setTimeout(() => {
-          this.props.closeLogin();
-          // }, 1000);
+
+          this.storeName(response.user.email);
+          this.props.updateName(response.user.email);
+
+          setTimeout(() => {
+            this.props.closeLogin();
+          }, 1000);
         }
       });
   };
