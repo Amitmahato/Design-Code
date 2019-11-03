@@ -15,7 +15,9 @@ const client = new ApolloClient({
 
 const initialState = {
   action: "",
-  name: ""
+  name: "",
+  avatar:
+    "https://p1.f0.n0.cdn.getcloudapp.com/items/jkuyZE96/avatar-default.jpg?v=4aadcdbdffe209bbd523530a75351afd"
 };
 
 const reducer = (state = initialState, action) => {
@@ -26,6 +28,8 @@ const reducer = (state = initialState, action) => {
       return { ...state, action: "openMenu" };
     case "UPDATE_NAME":
       return { ...state, name: action.name };
+    case "UPDATE_AVATAR":
+      return { ...state, avatar: action.avatar };
     case "OPEN_LOGIN":
       return { ...state, action: "openLogin" };
     case "CLOSE_LOGIN":
