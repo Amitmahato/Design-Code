@@ -65,6 +65,11 @@ const mapDispatchToProps = dispatch => {
         type: "OPEN_MENU",
         name: name
       });
+    },
+    openLogin: () => {
+      dispatch({
+        type: "OPEN_LOGIN"
+      });
     }
   };
 };
@@ -139,7 +144,7 @@ class HomeScreen extends Component {
             <ScrollView showsVerticalScrollIndicator={false}>
               <TitleBar>
                 <TouchableOpacity
-                  onPress={() => this.props.openMenu(this.props.name)}
+                  onPress={() => this.props.openLogin()}
                   style={{
                     position: "absolute",
                     marginLeft: 15
