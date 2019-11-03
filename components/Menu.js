@@ -26,7 +26,13 @@ const mapDispatchToProps = dispatch => {
       dispatch({
         type: "UPDATE_NAME",
         name: name
-      })
+      }),
+    updateAvatar: avatar => {
+      dispatch({
+        type: "UPDATE_AVATAR",
+        avatar
+      });
+    }
   };
 };
 
@@ -91,6 +97,9 @@ class Menu extends React.Component {
     if (index == 3) {
       this.props.closeMenu();
       this.props.updateName();
+      this.props.updateAvatar(
+        "https://p1.f0.n0.cdn.getcloudapp.com/items/jkuyZE96/avatar-default.jpg?v=4aadcdbdffe209bbd523530a75351afd"
+      );
       AsyncStorage.clear();
     }
   };
