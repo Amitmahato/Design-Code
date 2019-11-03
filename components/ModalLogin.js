@@ -1,23 +1,75 @@
 import React from "react";
 import styled from "styled-components";
 import {
+  Alert,
+  Animated,
+  Dimensions,
   Keyboard,
   TouchableOpacity,
   TouchableWithoutFeedback
 } from "react-native";
 import { BlurView } from "expo-blur";
+import { connect } from "react-redux";
+
 import Success from "./Success";
 import Loading from "./Loading";
 
-export default class ModalLogin extends React.Component {
+const screenHeight = Dimensions.get("window").height;
+
+mapStateToProps = state => {
+  return { action: state.action };
+};
+
+mapDispatchToProps = dispatch => {
+  return {
+    closeLogin: () => {
+      dispatch({
+        type: "CLOSE_LOGIN"
+      });
+    }
+  };
+};
+
+class ModalLogin extends React.Component {
   state = {
     email: "",
     password: "",
     iconEmail: require("../assets/icon-email.png"),
     iconPassword: require("../assets/icon-password.png"),
     isSuccessfull: false,
-    isLoading: false
+    isLoading: false,
+    top: new Animated.Value(screenHeight),
+    scale: new Animated.Value(1.3),
+    translateY: new Animated.Value(0)
   };
+
+  componentDidUpdate() {
+    if (this.props.action === "openLogin") {
+      Animated.timing(this.state.top, {
+        toValue: 0,
+        duration: 0
+      }).start();
+      Animated.spring(this.state.scale, { toValue: 1 }).start();
+      Animated.timing(this.state.translateY, {
+        toValue: 0,
+        duration: 0
+      }).start();
+    }
+
+    if (this.props.action === "closeLogin") {
+      setTimeout(() => {
+        Animated.timing(this.state.top, {
+          toValue: screenHeight,
+          duration: 0
+        }).start();
+        Animated.spring(this.state.scale, { toValue: 1.3 }).start();
+      }, 500);
+      Animated.timing(this.state.translateY, {
+        toValue: 1000,
+        duration: 500
+      }).start();
+    }
+  }
 
   focusEmail = () => {
     this.setState({
@@ -36,21 +88,27 @@ export default class ModalLogin extends React.Component {
     this.setState({ isLoading: true });
     setTimeout(() => {
       this.setState({ isLoading: false, isSuccessfull: true });
+      Alert.alert("Congrats", "You've logged in successfully!");
+
+      setTimeout(() => {
+        this.props.closeLogin();
+      }, 1000);
     }, 2000);
   };
 
-  dismissKeyboard = () => {
+  tapBackground = () => {
     Keyboard.dismiss();
     this.setState({
       iconEmail: require("../assets/icon-email.png"),
       iconPassword: require("../assets/icon-password.png")
     });
+    this.props.closeLogin();
   };
 
   render() {
     return (
-      <Container>
-        <TouchableWithoutFeedback onPress={this.dismissKeyboard}>
+      <AnimatedContainer style={{ top: this.state.top }}>
+        <TouchableWithoutFeedback onPress={this.tapBackground}>
           <BlurView
             tint="dark"
             intensity={150}
@@ -63,7 +121,14 @@ export default class ModalLogin extends React.Component {
             }}
           />
         </TouchableWithoutFeedback>
-        <Modal>
+        <AnimatedModal
+          style={{
+            transform: [
+              { scale: this.state.scale },
+              { translateY: this.state.translateY }
+            ]
+          }}
+        >
           <Logo source={require("../assets/logo-dc.png")} />
           <Text>Start Learning. Access Pro Content.</Text>
           <TextInput
@@ -85,13 +150,18 @@ export default class ModalLogin extends React.Component {
               <ButtonText>Login</ButtonText>
             </Button>
           </TouchableOpacity>
-        </Modal>
+        </AnimatedModal>
         <Success isActive={this.state.isSuccessfull} />
         <Loading isActive={this.state.isLoading} />
-      </Container>
+      </AnimatedContainer>
     );
   }
 }
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ModalLogin);
 
 const Container = styled.View`
   position: absolute;
@@ -103,6 +173,9 @@ const Container = styled.View`
   justify-content: center;
   align-items: center;
 `;
+
+const AnimatedContainer = Animated.createAnimatedComponent(Container);
+
 const Modal = styled.View`
   width: 335px;
   height: 370px;
@@ -110,6 +183,8 @@ const Modal = styled.View`
   border-radius: 20px;
   align-items: center;
 `;
+const AnimatedModal = Animated.createAnimatedComponent(Modal);
+
 const Logo = styled.Image`
   width: 44px;
   height: 44px;
