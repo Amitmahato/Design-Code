@@ -13,6 +13,7 @@ import { connect } from "react-redux";
 
 import Success from "./Success";
 import Loading from "./Loading";
+import firebase from "./Firebase";
 
 const screenHeight = Dimensions.get("window").height;
 
@@ -86,14 +87,25 @@ class ModalLogin extends React.Component {
 
   handleLogin = () => {
     this.setState({ isLoading: true });
-    setTimeout(() => {
-      this.setState({ isLoading: false, isSuccessfull: true });
-      Alert.alert("Congrats", "You've logged in successfully!");
 
-      setTimeout(() => {
-        this.props.closeLogin();
-      }, 1000);
-    }, 2000);
+    const email = this.state.email;
+    const password = this.state.password;
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .catch(error => {
+        Alert.alert("Error", error.message);
+      })
+      .then(response => {
+        console.log(response);
+
+        if (response) {
+          this.setState({ isLoading: false, isSuccessfull: true });
+          // setTimeout(() => {
+          this.props.closeLogin();
+          // }, 1000);
+        }
+      });
   };
 
   tapBackground = () => {
