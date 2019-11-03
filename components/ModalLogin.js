@@ -6,6 +6,7 @@ import {
   AsyncStorage,
   Dimensions,
   Keyboard,
+  StatusBar,
   TouchableOpacity,
   TouchableWithoutFeedback
 } from "react-native";
@@ -15,6 +16,7 @@ import { connect } from "react-redux";
 import Success from "./Success";
 import Loading from "./Loading";
 import firebase from "./Firebase";
+import { saveState } from "./PersistentStorage";
 
 const screenHeight = Dimensions.get("window").height;
 
@@ -34,6 +36,12 @@ mapDispatchToProps = dispatch => {
         type: "UPDATE_NAME",
         name
       });
+    },
+    updateAvatar: avatar => {
+      dispatch({
+        type: "UPDATE_AVATAR",
+        avatar
+      });
     }
   };
 };
@@ -48,15 +56,16 @@ class ModalLogin extends React.Component {
     isLoading: false,
     top: new Animated.Value(screenHeight),
     scale: new Animated.Value(1.3),
-    translateY: new Animated.Value(0)
+    translateY: new Animated.Value(0),
+    intensity: new Animated.Value(0)
   };
-
-  componentDidMount() {
-    this.retrieveName();
-  }
 
   componentDidUpdate() {
     if (this.props.action === "openLogin") {
+      Animated.timing(this.state.intensity, {
+        toValue: 180,
+        duration: 200
+      }).start();
       Animated.timing(this.state.top, {
         toValue: 0,
         duration: 0
@@ -66,9 +75,13 @@ class ModalLogin extends React.Component {
         toValue: 0,
         duration: 0
       }).start();
+      StatusBar.setBarStyle("light-content");
     }
 
     if (this.props.action === "closeLogin") {
+      Animated.spring(this.state.intensity, {
+        toValue: 0
+      }).start();
       setTimeout(() => {
         Animated.timing(this.state.top, {
           toValue: screenHeight,
@@ -80,6 +93,7 @@ class ModalLogin extends React.Component {
         toValue: 1000,
         duration: 500
       }).start();
+      StatusBar.setBarStyle("dark-content");
     }
   }
 
@@ -97,23 +111,36 @@ class ModalLogin extends React.Component {
     });
   };
 
-  storeName = async name => {
-    try {
-      await AsyncStorage.setItem("name", name);
-    } catch (error) {}
-  };
-
-  retrieveName = async () => {
-    try {
-      const name = await AsyncStorage.getItem("name");
-      if (name != null) {
-        this.props.updateName(name);
-        console.log(name);
+  fetchUser = async () => {
+    await fetch(
+      // "https://uifaces.co/api?limit=1&provider[]=8&emotion[]=happiness&gender[]=male&from_age=21&to_age=21&random",
+      "https://uifaces.co/api?limit=1&random",
+      {
+        headers: new Headers({
+          "X-API-KEY": "3dd0dd75e8b3fa3d493ed8bd6181ed"
+        })
       }
-    } catch (error) {}
+    )
+      .then(async response => {
+        let data = await response.json();
+        return data;
+      })
+      .then(data => {
+        var name = data[0].name;
+        var avatar = data[0].photo;
+        if (name != null && avatar != null) {
+          saveState({ name: name, avatar: avatar });
+          this.props.updateName(name);
+          this.props.updateAvatar(avatar);
+        }
+      })
+      .catch(error => {
+        Alert.alert("Error", "Failed to load from uifaces.co");
+      });
   };
 
   handleLogin = () => {
+    Keyboard.dismiss();
     this.setState({ isLoading: true });
 
     const email = this.state.email;
@@ -126,16 +153,13 @@ class ModalLogin extends React.Component {
         this.setState({ isLoading: false });
       })
       .then(response => {
-        // console.log(response);
-
         if (response) {
           this.setState({ isLoading: false, isSuccessfull: true });
 
-          this.storeName(response.user.email);
-          this.props.updateName(response.user.email);
+          this.fetchUser();
 
           setTimeout(() => {
-            this.props.closeLogin();
+            this.tapBackground();
           }, 1000);
         }
       });
@@ -145,7 +169,10 @@ class ModalLogin extends React.Component {
     Keyboard.dismiss();
     this.setState({
       iconEmail: require("../assets/icon-email.png"),
-      iconPassword: require("../assets/icon-password.png")
+      iconPassword: require("../assets/icon-password.png"),
+      email: "",
+      password: "",
+      isSuccessfull: false
     });
     this.props.closeLogin();
   };
@@ -154,9 +181,9 @@ class ModalLogin extends React.Component {
     return (
       <AnimatedContainer style={{ top: this.state.top }}>
         <TouchableWithoutFeedback onPress={this.tapBackground}>
-          <BlurView
+          <AnimatedBlurView
             tint="dark"
-            intensity={150}
+            intensity={this.state.intensity}
             style={{
               position: "absolute",
               top: 0,
@@ -178,13 +205,17 @@ class ModalLogin extends React.Component {
           <Text>Start Learning. Access Pro Content.</Text>
           <TextInput
             placeholder="Email"
-            keyboardType="email-address"
+            keyboardType="url"
+            autoCompleteType="email"
+            autoCapitalize="none"
+            clearTextOnFocus={true}
             onChangeText={email => this.setState({ email })}
             onFocus={this.focusEmail}
           />
           <TextInput
             placeholder="Password"
             secureTextEntry={true}
+            clearTextOnFocus={true}
             onChangeText={password => this.setState({ password })}
             onFocus={this.focusPassword}
           />
@@ -214,12 +245,14 @@ const Container = styled.View`
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
+  /* background: rgba(0, 0, 0, 0.6); */
   justify-content: center;
   align-items: center;
 `;
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
+
+const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
 const Modal = styled.View`
   width: 335px;
