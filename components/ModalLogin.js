@@ -6,13 +6,17 @@ import {
   TouchableWithoutFeedback
 } from "react-native";
 import { BlurView } from "expo-blur";
+import Success from "./Success";
+import Loading from "./Loading";
 
 export default class ModalLogin extends React.Component {
   state = {
     email: "",
     password: "",
     iconEmail: require("../assets/icon-email.png"),
-    iconPassword: require("../assets/icon-password.png")
+    iconPassword: require("../assets/icon-password.png"),
+    isSuccessfull: false,
+    isLoading: false
   };
 
   focusEmail = () => {
@@ -29,7 +33,10 @@ export default class ModalLogin extends React.Component {
   };
 
   handleLogin = () => {
-    console.log();
+    this.setState({ isLoading: true });
+    setTimeout(() => {
+      this.setState({ isLoading: false, isSuccessfull: true });
+    }, 2000);
   };
 
   dismissKeyboard = () => {
@@ -42,8 +49,8 @@ export default class ModalLogin extends React.Component {
 
   render() {
     return (
-      <TouchableWithoutFeedback onPress={this.dismissKeyboard}>
-        <Container>
+      <Container>
+        <TouchableWithoutFeedback onPress={this.dismissKeyboard}>
           <BlurView
             tint="dark"
             intensity={150}
@@ -55,31 +62,33 @@ export default class ModalLogin extends React.Component {
               height: "100%"
             }}
           />
-          <Modal style={{ elevation: 20 }}>
-            <Logo source={require("../assets/logo-dc.png")} />
-            <Text>Start Learning. Access Pro Content.</Text>
-            <TextInput
-              placeholder="Email"
-              keyboardType="email-address"
-              onChangeText={email => this.setState({ email })}
-              onFocus={this.focusEmail}
-            />
-            <TextInput
-              placeholder="Password"
-              secureTextEntry={true}
-              onChangeText={password => this.setState({ password })}
-              onFocus={this.focusPassword}
-            />
-            <IconEmail source={this.state.iconEmail} />
-            <IconPassword source={this.state.iconPassword} />
-            <TouchableOpacity onPress={this.handleLogin}>
-              <Button style={{ elevation: 5 }}>
-                <ButtonText>Login</ButtonText>
-              </Button>
-            </TouchableOpacity>
-          </Modal>
-        </Container>
-      </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback>
+        <Modal>
+          <Logo source={require("../assets/logo-dc.png")} />
+          <Text>Start Learning. Access Pro Content.</Text>
+          <TextInput
+            placeholder="Email"
+            keyboardType="email-address"
+            onChangeText={email => this.setState({ email })}
+            onFocus={this.focusEmail}
+          />
+          <TextInput
+            placeholder="Password"
+            secureTextEntry={true}
+            onChangeText={password => this.setState({ password })}
+            onFocus={this.focusPassword}
+          />
+          <IconEmail source={this.state.iconEmail} />
+          <IconPassword source={this.state.iconPassword} />
+          <TouchableOpacity onPress={this.handleLogin}>
+            <Button style={{ elevation: 5 }}>
+              <ButtonText>Login</ButtonText>
+            </Button>
+          </TouchableOpacity>
+        </Modal>
+        <Success isActive={this.state.isSuccessfull} />
+        <Loading isActive={this.state.isLoading} />
+      </Container>
     );
   }
 }
