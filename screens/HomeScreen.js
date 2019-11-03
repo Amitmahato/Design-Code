@@ -93,6 +93,10 @@ class HomeScreen extends Component {
     }
   }
 
+  handleAvatar = () => {
+    if (this.props.name) this.props.openMenu();
+    else this.props.openLogin();
+  };
   toggleMenu = () => {
     if (this.props.action == "openMenu") {
       Animated.spring(this.state.scale, {
@@ -144,7 +148,7 @@ class HomeScreen extends Component {
             <ScrollView showsVerticalScrollIndicator={false}>
               <TitleBar>
                 <TouchableOpacity
-                  onPress={() => this.props.openLogin()}
+                  onPress={this.handleAvatar}
                   style={{
                     position: "absolute",
                     marginLeft: 15
