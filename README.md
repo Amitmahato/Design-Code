@@ -1,5 +1,10 @@
 # Design-Code
-A react-native app design similar to any e-learning platform from design perspective
+A react-native app design similar to any e-learning platform from design perspective. The app features following highlights:
+1. Horizontal and Vertical ScrollView for scrolling through content
+2. Navigation between the screens
+3. Firebase authenicated login
+4. Tinder like swipe feature
+5. Various animation effects to make the app look preety
 
 ## Getting Started
 ### Install Node
