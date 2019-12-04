@@ -19,3 +19,27 @@ Go to your new project’s folder and start the environment: expo start
 
 ### Install Libraries 
 npm install
+
+## Application Preview
+### Login
+<img title="Login" src="https://github.com/Amitmahato/Design-Code/blob/master/preview/Login.png" alt="Login" width="400"/>
+
+
+### Home
+<img title="Home" src="https://github.com/Amitmahato/Design-Code/blob/master/preview/Home.png" alt="Login" width="400"/>
+
+
+### Menu
+<img title="Menu" src="https://github.com/Amitmahato/Design-Code/blob/master/preview/Menu.png" alt="Login" width="400"/>
+
+
+### Course Section
+<img title="Course Section" src="https://github.com/Amitmahato/Design-Code/blob/master/preview/CourseSection.png" alt="Login" width="400"/>
+
+
+### Projects
+<img title="Projects" src="https://github.com/Amitmahato/Design-Code/blob/master/preview/Projects.png" alt="Login" width="400"/>
+
+
+### Project Full Detail
+<img title="Project Full Detail" src="https://github.com/Amitmahato/Design-Code/blob/master/preview/ProjectFullScreen.png" alt="Login" width="400"/>
